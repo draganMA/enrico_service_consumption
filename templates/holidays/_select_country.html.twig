@@ -1,0 +1,62 @@
+<form class="form-group" action="country" method="get">
+    <table class="table d-flex justify-content-center">
+        <tr>
+            <td>
+                    <select id="country_name" class="custom-select" name="selectCountryRegionYear[]">
+                        <option selected>Select a country</option>
+                        {% for result in results %}
+                            {# noticed that whitespaces are encounted as closing JSON strings literals.  #}
+                            {# so replacing them with underscores in order to avoid bugs #}
+                            <option value={{ result|json_encode|replace({' ':'_'}) }}>{{ result.fullName }}</option>
+                        {% endfor %}
+                    </select>
+            </td>
+            <td>
+                    <select id="country_region" class="custom-select" hidden="" name="selectCountryRegionYear[region]">
+                        <option selected>""</option>
+                    </select>
+                    <small id="country_region_info" class="form-text text-white" hidden="">Select a region</small>
+            </td>
+            <td>
+                    <input id="selected_year" type="number" class="form-control" name="selectCountryRegionYear[year]" placeholder="Type a year"></input>
+                    <small id="year_input_info" class="form-text text-white"></small>
+        
+            </td>
+            <td>
+                
+                    <input id="submit_button" type="submit" value="Submit" class="btn btn-primary">
+                
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" ></script>
+<script type="application/javascript">
+ 
+    $(document).ready(function() {
+        $('#country_name').on('change', function(e){
+            e.preventDefault();
+            var data = $('#country_name').val();
+            data = JSON.parse(data);
+            $('#country_region').empty();
+            if( data.regions.length != 0){
+                $.each(data.regions, function(i, p){
+                    $('#country_region').append($('<option></option>').val(p).html(p));
+                });
+                $('#country_region').attr('hidden', false);
+                $('#country_region_info').attr('hidden', false);
+            }
+            else{
+                $('#country_region').attr('hidden', true);
+                $('#country_region_info').attr('hidden', true);
+            }
+            var minYear = data.fromDate.year;
+            $('#year_input_info').html("There is no data below " + minYear + " for this country");
+            $('#selected_year').val(minYear);
+        });
+    });
+
+</script>
+
+

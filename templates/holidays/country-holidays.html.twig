@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <hr>
+    <div class="d-flex justify-content-center ">
+        <li class="list-group-item list-group-item-warning">
+            <h4 class="text-center">{{ selected_country }} {{ selected_year }} {{ selected_region }} </h4>
+            <h5 class="text-center text-muted">{{ total_free_days }} maximum free days</h5>
+            <h6 class="text-center text-muted">{{ public_holidays }} total public holidays</h6>
+        </li>
+    </div>
+
+    <li class="list-group-item list-group-item-dark badge text-center container">Fetched from {{ origin }} </li>
+
+    {% for key, value in holidays_by_month %}
+        
+        <div class="list-group">
+            <div class="align-baseline list-group-item container" style="margin-bottom:1%">
+                <h5 class="mb-1"> <span class="badge badge-dark">{{ key|date(value[0].date.year ~ '-' ~key~ '-' ~value[0].date.day)|date('M') }} </span></h5>
+
+                {% for holiday in value %}
+
+                    <div class="list-group container" style="margin-bottom:0.5%">
+                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-secondary">
+                          
+                            <div class="d-flex justify-content-around">
+
+                                {% for langs in holiday.name %}
+
+                                    <div class="list-group">
+                                        <h5 class="mb-1">{{ langs.text }}</h5>
+                                        <h6 class="mb-1 font-italic text-muted"> [{{ langs.lang }}]</h6>
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                            {% if 'public_holiday' in holiday.holidayType %}
+                                {% set holiday_type = 'Holiday' %}
+                            {% elseif 'observance' in holiday.holidayType %}
+                                {% set holiday_type = 'Free day' %}
+                            {% else %}
+                                {% set holiday_type = 'Workday' %}
+                            {% endif %}
+
+                            <div class="d-flex justify-content-center">
+                                <div class="list-group">
+                                    <p class="mb-1 text-center">{{ holiday.date.day|date(holiday.date.year ~'-'~ key ~'-'~ holiday.date.day)|date('Y-m-d') }} ({{ holiday.date.day|date(holiday.date.year ~'-'~ key ~'-'~ holiday.date.day)|date('D') }}) </p>
+                                    <small class="badge badge-warning badge-pill text-center">Status: {{ holiday_type }} </small>
+                                </div>
+                          </div>
+                        </a>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+        </div>
+
+    {% endfor %}
+    
+{% endblock %}
+
+
